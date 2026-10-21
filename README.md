@@ -13,15 +13,15 @@ A local budgeting prototype for recording transactions, setting expense-category
 | Budgets | Manage categories and monthly expense limits |
 | Reports | Spending by category and monthly trends |
 
-The repository is named `claude-code-demo`; **Budgeteer** is the application name. Coding-agent guidance is in [CLAUDE.md](CLAUDE.md) and [AGENTS.md](AGENTS.md). The application does not integrate an LLM.
+Coding-agent guidance is in [CLAUDE.md](CLAUDE.md) and [AGENTS.md](AGENTS.md). The application does not integrate an LLM.
 
 ## Run locally
 
 Use Node.js **24 LTS** and npm. Run commands from the repository root.
 
 ```sh
-git clone https://github.com/ammarAlhamoud/claude-code-demo.git
-cd claude-code-demo
+git clone https://github.com/ammarAlhamoud/budgeteer.git
+cd budgeteer
 npm ci
 ```
 
