@@ -18,7 +18,7 @@ npx prisma migrate dev       # create/apply a migration against the SQLite db
 npx prisma db seed           # reset + seed sample data (runs `tsx prisma/seed.ts`)
 ```
 
-There is no test runner configured. Verification is done via `tsc --noEmit`, `npm run lint`, and exercising the running app / API routes.
+Run `npm test` for domain calculation regressions using Node's test runner through tsx. CI runs these tests in UTC, Europe/Berlin and America/Los_Angeles. These tests do not cover route handlers or the UI; also use `tsc --noEmit`, `npm run lint`, and exercise the running app / API routes.
 
 ## Stack & hard constraints
 
