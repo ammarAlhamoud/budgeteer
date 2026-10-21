@@ -128,6 +128,7 @@ export default function BudgetsManager({ categories, spend }: Props) {
                       </span>
                       <span className="text-gray-200">/</span>
                       <input
+                        aria-label={`${c.name} monthly limit`}
                         type="number"
                         min="0"
                         step="10"
@@ -246,10 +247,11 @@ export default function BudgetsManager({ categories, spend }: Props) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-gray-500">
+          <label htmlFor="category-name" className="mb-1.5 block text-xs font-medium text-gray-500">
             Name
           </label>
           <input
+            id="category-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputCls}
@@ -259,11 +261,12 @@ export default function BudgetsManager({ categories, spend }: Props) {
 
         {type === "expense" && (
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-gray-500">
+            <label htmlFor="category-limit" className="mb-1.5 block text-xs font-medium text-gray-500">
               Monthly limit
             </label>
             <input
               type="number"
+              id="category-limit"
               min="0"
               step="10"
               value={limit}
