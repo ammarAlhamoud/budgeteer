@@ -1,49 +1,21 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { getTransactions } from "@/lib/data";
+import { prisma } from '@/lib/db';
+import { getTransactions } from '@/lib/data';
+import * as validate from '@/lib/api-validation';
 
-// GET /api/transactions  -> list all transactions (newest first), with category.
-// Reuses getTransactions() so this endpoint and the server-rendered pages return
-// the same TransactionDTO shape (serialized dates, included category).
-export async function GET() {
-  return NextResponse.json(await getTransactions());
-}
+export async function GET() { return Response.json(await getTransactions()); }
 
-// POST /api/transactions -> create a transaction.
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { amount, type, date, note, categoryId } = body ?? {};
-
-  if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
-    return NextResponse.json(
-      { error: "amount must be a positive number" },
-      { status: 400 }
-    );
-  }
-  if (type !== "income" && type !== "expense") {
-    return NextResponse.json(
-      { error: "type must be 'income' or 'expense'" },
-      { status: 400 }
-    );
-  }
-  if (!categoryId || typeof categoryId !== "string") {
-    return NextResponse.json({ error: "categoryId is required" }, { status: 400 });
-  }
-
-  const parsedDate = date ? new Date(date) : new Date();
-  if (Number.isNaN(parsedDate.getTime())) {
-    return NextResponse.json({ error: "date is invalid" }, { status: 400 });
-  }
-
-  const created = await prisma.transaction.create({
-    data: {
-      amount,
-      type,
-      categoryId,
-      note: note ?? null,
-      date: parsedDate,
-    },
-    include: { category: true },
-  });
-  return NextResponse.json(created, { status: 201 });
+  try {
+    const body = await validate.readObject(request);
+    const data = {
+      amount: validate.amount(body.amount), type: validate.txType(body.type),
+      categoryId: validate.text(body.categoryId, 'categoryId'),
+      date: body.date === undefined ? new Date() : validate.date(body.date),
+      note: body.note === undefined ? null : validate.note(body.note),
+    };
+    const category = await prisma.category.findUnique({ where: { id: data.categoryId } });
+    if (!category || category.type !== data.type) throw new validate.InvalidInput('category must exist and match transaction type');
+    const created = await prisma.transaction.create({ data, include: { category: true } });
+    return Response.json(created, { status: 201 });
+  } catch (error) { return validate.inputError(error); }
 }

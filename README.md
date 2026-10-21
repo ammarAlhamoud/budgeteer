@@ -52,21 +52,25 @@ npm test
 npm run lint
 npx tsc --noEmit
 npm run build
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Generate the Prisma client before type checking. The calculation suite covers month boundaries, offsets, leap years, empty months, negative balances and category limits. [CI](.github/workflows/verify.yml) runs it in UTC, Europe/Berlin and America/Los_Angeles. These domain tests do not establish API, browser or deployment correctness.
+Generate the Prisma client before type checking. The calculation suite covers month boundaries, offsets, leap years, empty months, negative balances and category limits. [CI](.github/workflows/verify.yml) runs it in UTC, Europe/Berlin and America/Los_Angeles. The separate Playwright suite covers real HTTP CRUD, invalid JSON and field values, category/type agreement, missing records, cascading deletion, and a browser journey through budget creation and transaction create/edit/delete with persistence after reload. It builds and starts the production app against a fresh temporary SQLite database, then removes that database. It never seeds or resets your working database. CI runs both suites. Set `CHROMIUM_PATH` only if you need an already installed Chromium executable. Deployment and multi-user security are outside this coverage.
 
 ## Current boundaries
 
 - Single shared database; no authentication or account isolation. Use synthetic demonstration data.
 - Money uses floating-point numbers. Production use needs an explicit minor-unit/decimal and rounding policy.
 - Currency display is USD with an English locale.
-- POST and PATCH validation is not yet consistent. Malformed input, missing category references and transaction/category type agreement need integration tests and hardening.
+- POST and PATCH share input validation. Date inputs accept a calendar date or ISO timestamp; category colors use six-digit hex. Resource absence returns 404 and invalid input returns 400. Authentication, concurrency policy and decimal money storage remain outside this prototype.
 - No bank connection, payment execution or financial advice.
 - No project-wide license file is included.
 
 ## Next steps
 
-1. Add route-level regression tests and consistent validation.
-2. Add a browser test covering a category, transaction and resulting budget.
-3. Record a reproducible demo and document deployment constraints.
+1. Decide authentication and per-user data isolation before any public write-enabled deployment.
+2. Replace floating-point money with an explicit minor-unit/decimal policy.
+3. Extend browser coverage to budget limits, reports and failure/retry states.
+
+See [the reproducible demo walkthrough](docs/DEMO.md) for a short synthetic-data presentation.

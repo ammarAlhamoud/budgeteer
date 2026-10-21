@@ -1,0 +1,35 @@
+import { test, expect } from '@playwright/test';
+
+test('create a budget, add/edit/delete a transaction, and preserve changes after reload', async ({ page, request }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/budgets');
+  await page.getByLabel('Name', { exact: true }).fill('Browser groceries');
+  await page.getByLabel('Monthly limit', { exact: true }).fill('200');
+  await page.getByRole('button', { name: 'Add category' }).click();
+  await expect(page.getByText('Browser groceries', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Transactions' }).click();
+  await page.getByLabel('Amount', { exact: true }).fill('42.50');
+  await page.getByLabel('Category', { exact: true }).selectOption({ label: 'Browser groceries' });
+  await page.getByLabel('Date', { exact: true }).fill('2026-10-01');
+  await page.getByLabel('Note', { exact: true }).fill('Synthetic browser purchase');
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  let row = page.getByRole('listitem').filter({ hasText: 'Synthetic browser purchase' });
+  await expect(row).toContainText('42.50');
+  await row.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.getByLabel('Amount', { exact: true }).fill('55');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(row).toContainText('55.00');
+  await page.reload();
+  row = page.getByRole('listitem').filter({ hasText: 'Synthetic browser purchase' });
+  await expect(row).toContainText('55.00');
+  page.once('dialog', dialog => dialog.accept());
+  await row.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(row).toHaveCount(0);
+  await page.getByRole('link', { name: 'Reports', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Reports', exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+  const categories = await (await request.get('/api/categories')).json();
+  const category = categories.find((c: { name: string }) => c.name === 'Browser groceries');
+  expect((await request.delete(`/api/categories/${category.id}`)).status()).toBe(200);
+});

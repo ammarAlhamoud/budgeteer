@@ -18,7 +18,7 @@ npx prisma migrate dev       # create/apply a migration against the SQLite db
 npx prisma db seed           # reset + seed sample data (runs `tsx prisma/seed.ts`)
 ```
 
-Run `npm test` for domain calculation regressions using Node's test runner through tsx. CI runs these tests in UTC, Europe/Berlin and America/Los_Angeles. These tests do not cover route handlers or the UI; also use `tsc --noEmit`, `npm run lint`, and exercise the running app / API routes.
+Run `npm test` for domain calculation regressions using Node's test runner through tsx. CI runs these tests in UTC, Europe/Berlin and America/Los_Angeles. Run `npm run test:e2e` for real HTTP API regressions and the Chromium CRUD journey. Its server wrapper generates Prisma, migrates and builds against a disposable temporary SQLite DB. Install Chromium with `npx playwright install chromium`. Do not point this suite at an existing server or database. Also use `tsc --noEmit` and `npm run lint`.
 
 ## Stack & hard constraints
 

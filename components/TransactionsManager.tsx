@@ -130,11 +130,12 @@ export default function TransactionsManager({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-gray-500">
+          <label htmlFor="transaction-amount" className="mb-1.5 block text-xs font-medium text-gray-500">
             Amount
           </label>
           <input
             type="number"
+            id="transaction-amount"
             step="0.01"
             min="0"
             value={amount}
@@ -145,10 +146,11 @@ export default function TransactionsManager({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-gray-500">
+          <label htmlFor="transaction-category" className="mb-1.5 block text-xs font-medium text-gray-500">
             Category
           </label>
           <select
+            id="transaction-category"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             className={inputCls}
@@ -163,11 +165,12 @@ export default function TransactionsManager({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-gray-500">
+          <label htmlFor="transaction-date" className="mb-1.5 block text-xs font-medium text-gray-500">
             Date
           </label>
           <input
             type="date"
+            id="transaction-date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className={inputCls}
@@ -175,11 +178,12 @@ export default function TransactionsManager({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-gray-500">
+          <label htmlFor="transaction-note" className="mb-1.5 block text-xs font-medium text-gray-500">
             Note
           </label>
           <input
             type="text"
+            id="transaction-note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             className={inputCls}
